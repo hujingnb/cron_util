@@ -65,7 +65,7 @@ foreach my $item (@allMergedBranch) {
     my $branchName =  $item;
     $branchName =~ s/remotes\/$remoteName\///;
     # 判断分支前缀
-    if($prefix != '' && $branchName =~ /^$prefix/){
+    if($prefix != '' && !($branchName =~ /^$prefix/)){
         next;
     }
     # 获取git的最新一次commit id
