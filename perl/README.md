@@ -1,6 +1,5 @@
-用来存放一些小工具
 
-## clear_remote_branch
+## clear-remote-branch.pl
 
 在平常开发过程中, 每次新任务都要拉新的分支出去. 这个任务分支等到合并到`master`之后, 也就没有用了. 
 

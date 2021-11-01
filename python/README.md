@@ -1,5 +1,3 @@
-用来存放一些小工具
-
 ## project_note_translation 
 
 将项目中所有的英文注释转成中文

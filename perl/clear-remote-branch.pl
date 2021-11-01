@@ -13,10 +13,12 @@ my $remoteBranchName = 'master';
 my $help = 0;
 my @filterBranchName = ();
 my $test = 0;
+my $delLocal = 0;
 
 my $optionIsOk = GetOptions ("remote=s" => \$remoteName,
     "branch=s" => \$remoteBranchName,
     "filter=s{1,}" => \@filterBranchName,
+    "local" => \$delLocal,
     "test" => \$test,
     "help|?" => \$help);
 # 参数错误
@@ -29,7 +31,7 @@ if(@filterBranchName == 0){
     @filterBranchName = ('master', 'sim_master', 'sim_default', 'dev');
 }
 
-`git checkout master > - 2>&1`;
+`git checkout $remoteBranchName > - 2>&1`;
 `git pull > - 2>&1`;
 `git fetch --all > - 2>&1`;
 # 获取所有已经合并到master的分支列表
@@ -68,20 +70,29 @@ foreach my $item (@allMergedBranch) {
     print($newestCommitId);
     print("\n");
     # 删除远程分支
-    if($test == 0) {`git push $remoteName --delete $branchName > - 2>&1`;}
+    if($test == 0) {
+        `git push $remoteName --delete $branchName > - 2>&1`;
+        if($delLocal != 0) {
+            `git branch -d $branchName > - 2>&1`;
+        }
+    }
 }
 
 __END__
 
 =head1 SYNOPSIS
 
-clear_remote_branch.pl [options]
+clear-remote-branch.pl [options]
 
 将远程所有已经合并到 master 的分支删除.
-注意, 这不会删除你的本地分支
 
 脚本在删除的时候, 会将删除的分支以及分支指针所指向的 commit_id 进行打印.
-若需要回复数据可自行保存
+若需要恢复数据可自行保存
+
+为脚本创建可执行软连接:
+
+ln -s <完整路径>/clear-remote-branch.pl /usr/local/bin/clear-remote-branch
+
 
 Options:
 
@@ -89,6 +100,7 @@ Options:
    --branch|-b          基准分支 (master)
    --filter|-f          指定需要过滤的分支 (master, sim_master, sim_default, dev)
                     --filter branch1 branch2 branch3
-    --test|-t           脚本测试, 只打印要删除的分支, 不执行删除逻辑
+   --local|-l           同步删除本地分支
+   --test|-t            脚本测试, 只打印要删除的分支, 不执行删除逻辑
    --help|-h            打印帮助文档
 =cut
