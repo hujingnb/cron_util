@@ -14,12 +14,14 @@ my $help = 0;
 my @filterBranchName = ();
 my $test = 0;
 my $delLocal = 0;
+my $prefix = '';
 
 my $optionIsOk = GetOptions ("remote=s" => \$remoteName,
     "branch=s" => \$remoteBranchName,
     "filter=s{1,}" => \@filterBranchName,
     "local" => \$delLocal,
     "test" => \$test,
+    "prefix=s" => \$prefix,
     "help|?" => \$help);
 # 参数错误
 pod2usage(2) if $optionIsOk != 1;
@@ -62,6 +64,10 @@ foreach my $item (@allMergedBranch) {
     # 获取分支名
     my $branchName =  $item;
     $branchName =~ s/remotes\/$remoteName\///;
+    # 判断分支前缀
+    if($prefix != '' && $branchName =~ /^$prefix/){
+        next;
+    }
     # 获取git的最新一次commit id
     # 将其打印, 防止删错分支还可以恢复
     my $newestCommitId = `git rev-parse $remoteName/$branchName`;
@@ -101,6 +107,7 @@ Options:
    --filter|-f          指定需要过滤的分支 (master, sim_master, sim_default, dev)
                     --filter branch1 branch2 branch3
    --local|-l           同步删除本地分支
+   --prefix|-p          添加分支的前缀判断
    --test|-t            脚本测试, 只打印要删除的分支, 不执行删除逻辑
    --help|-h            打印帮助文档
 =cut
