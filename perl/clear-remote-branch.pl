@@ -15,10 +15,14 @@ my @filterBranchName = ();
 my $test = 0;
 my $delLocal = 0;
 my $prefix = '';
+my $outputFile = '';
+my $quit = 0;
 
 my $optionIsOk = GetOptions ("remote=s" => \$remoteName,
     "branch=s" => \$remoteBranchName,
     "filter=s{1,}" => \@filterBranchName,
+    "output=s" => \$outputFile,
+    "quit" => \$quit,
     "local" => \$delLocal,
     "test" => \$test,
     "prefix=s" => \$prefix,
@@ -71,10 +75,18 @@ foreach my $item (@allMergedBranch) {
     # 获取git的最新一次commit id
     # 将其打印, 防止删错分支还可以恢复
     my $newestCommitId = `git rev-parse $remoteName/$branchName`;
-    print($branchName);
-    print("\n");
-    print($newestCommitId);
-    print("\n");
+    $newestCommitId =~ s/^\s+|\s+$//g;
+    if($quit == 0){
+      print($branchName);
+      print("\n");
+      print($newestCommitId);
+      print("\n");
+    }
+    # 将内容进行记录
+    if($outputFile ne ''){
+        `echo "$branchName" >> $outputFile`;
+        `echo "$newestCommitId" >> $outputFile`;
+    }
     # 删除远程分支
     if($test == 0) {
         `git push $remoteName --delete $branchName > - 2>&1`;
@@ -109,5 +121,7 @@ Options:
    --local|-l           同步删除本地分支
    --prefix|-p          添加分支的前缀判断
    --test|-t            脚本测试, 只打印要删除的分支, 不执行删除逻辑
+   --output|-o          将内容追加到文件中
+   --quit|-q            静默清除
    --help|-h            打印帮助文档
 =cut
