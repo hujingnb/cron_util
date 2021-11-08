@@ -37,9 +37,9 @@ if(@filterBranchName == 0){
     @filterBranchName = ('master', 'sim_master', 'sim_default', 'dev');
 }
 
-`git checkout $remoteBranchName > - 2>&1`;
-`git pull > - 2>&1`;
-`git fetch --all > - 2>&1`;
+`git checkout $remoteBranchName > /dev/null 2>&1`;
+`git pull > /dev/null 2>&1`;
+`git fetch --all > /dev/null 2>&1`;
 # 获取所有已经合并到master的分支列表
 my $allMergedBranchStr = `git branch -a --merged $remoteBranchName`;
 my @allMergedBranch = split(/\n/, $allMergedBranchStr);
@@ -89,9 +89,9 @@ foreach my $item (@allMergedBranch) {
     }
     # 删除远程分支
     if($test == 0) {
-        `git push $remoteName --delete $branchName > - 2>&1`;
+        `git push $remoteName --delete $branchName > /dev/null 2>&1`;
         if($delLocal != 0) {
-            `git branch -d $branchName > - 2>&1`;
+            `git branch -d $branchName > /dev/null 2>&1`;
         }
     }
 }
