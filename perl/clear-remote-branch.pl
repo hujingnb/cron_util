@@ -40,6 +40,8 @@ if(@filterBranchName == 0){
 `git checkout $remoteBranchName > /dev/null 2>&1`;
 `git pull > /dev/null 2>&1`;
 `git fetch --all > /dev/null 2>&1`;
+# 清理远程已经删除的分支
+`git remote prune $remoteName > /dev/null 2>&1`;
 # 获取所有已经合并到master的分支列表
 my $allMergedBranchStr = `git branch -a --merged $remoteBranchName`;
 my @allMergedBranch = split(/\n/, $allMergedBranchStr);
